@@ -1,15 +1,27 @@
 import "./styles.css";
-import { Button, Input, Select, Space } from 'antd';
-import { Table } from "antd";
+import React, { useState } from "react";
+import { Table, Button, Input, Select, Space } from "antd";
+
 const { Search } = Input;
 
 export default function App() {
-  const onChange = value => {
-  console.log(`selected ${value}`);
-};
-  const onSearch = value => {
-  console.log('search:', value);
-};
+  const [formData, setFormData] = useState({
+    InputAtomic: "",
+    InputEnergy: "",
+  });
+  const [result, setResult] = useState('');
+
+  const [selectedSource, setSelectedSource] = useState("");
+  const [transitionType, setTransitionType] = useState("");
+
+  const handleChange = (e) => {
+    const { name, value } = e.target;
+    setFormData((prevData) => ({
+      ...prevData,
+      [name]: value,
+    }));
+  };
+
   const dataSource = [
     {
       key: "1",
@@ -43,6 +55,7 @@ export default function App() {
         "large list of data covering every proton number in the range, results are similar to Rose",
     },
   ];
+
   const columns = [
     {
       title: "Source",
@@ -65,80 +78,155 @@ export default function App() {
       key: "comments",
     },
   ];
+  const CalcB2 = (Z,Energy) => {
+  	 if (selectedSource === "Rose" ) {
+  	 	if(transitionType === "E1"){
+  	 	const res = 1-(2.99467+0.00531914*Z-1.91083E-06*Z*Z )/( 1 + ( -0.0259849 + 0.00979738*Z + -1.52332E-05*Z*Z )*Energy + ( 0.519404 + -0.00690479*Z + 1.29853E-05*Z*Z )*Energy*Energy );
+  	 	console.log("Estimated b2 value =", res);
+        	setResult(`Estimated b2 value = ${res}`);}
+        	
+        	else if(transitionType === "E2"){
+        	const res = (0.886352 + 0.00704057*Z -5.94772E-05*Z*Z) + (1.11097 + 0.00393828*Z + -7.2124E-05*Z*Z)*Math.exp(-(0.405355 + 0.00492474*Z + 0.000135948*Z*Z)*Energy);
+        	console.log("Estimated b2 value =", res);
+        	setResult(`Estimated b2 value = ${res}`);;
+        	}
+        	else if(transitionType === "M1"){
+        	const res = 1 - ( -0.172538 + 0.0242002*Z + 7.23593E-05*Z*Z +-2.09992E-06*Z*Z*Z) / ( 1 + ( 1.72879 + 0.00342877*Z + -0.00040695*Z*Z +1.92715E-06*Z*Z*Z)*Energy + ( 0.138227 + -0.00432782*Z + 1.11273E-06*Z*Z+3.10188E-07*Z*Z*Z )*Energy*Energy );
+        	console.log("Estimated b2 value =", res);
+        	setResult(`Estimated b2 value = ${res}`);
+        	
+        	
+        	}
+        	else if(transitionType === "M2"){
+        	const res = 1-(0.0853597+-0.0146173*Z+0.000100801*Z*Z )/( 1 + ( 4.02747 +-0.063367*Z + 0.000241494*Z*Z )*Energy + ( -0.174787 + 0.00116221*Z + 5.75733E-06*Z*Z )*Energy*Energy );
+        	console.log("Estimated b2 value =", res);
+        	setResult(`Estimated b2 value = ${res}`);
+        	
+        	}
+        	else if(transitionType === "E1M2"){
+        	console.log("Mixed transition unavailable for Rose's dataset");
+        	setResult(`Mixed transition unavailable for Rose's dataset`);}
+        	else if(transitionType === "M1E2"){
+        	console.log("Mixed transition unavailable for Rose's dataset");
+        	setResult(`Mixed transition unavailable for Rose's dataset`);}
+        	
+  	 
+  	 }
+  	 
+  	 else if(selectedSource === "Purdue" ){
+  	 	if(transitionType === "E1"){
+  	 	const res = 1 - ( 2.81012 + 0.0036971*Z ) / ( 1 + ( -0.409085 + 0.00918462*Z  )*Energy + ( 0.822086 + -0.00739632*Z  )*Energy*Energy );
+  	 	console.log("Estimated b2 value =", res);
+        	setResult(`Estimated b2 value = ${res}`);
+  	 	}
+  	 	else if(transitionType === "M1"){
+  	 	const res = 1 - ( -0.531788 + 0.0499879*Z+-0.000356032*Z*Z ) / ( 1 + ( 2.28383 + 5.37883e-05*Z+-0.00027077*Z*Z  )*Energy + ( -0.714478 + 8.21319e-07*Z+0.000100324*Z*Z  )*Energy*Energy )
+  	 	console.log("Estimated b2 value =", res);
+        	setResult(`Estimated b2 value = ${res}`);
+  	 	}
+  	 	else if(transitionType ==="M2"){
+  	 	const res = 1 + ( 0.0999781 + 0.0101438*Z+-7.04646e-05*Z*Z ) / ( 1 + ( 2.6442 + -0.0132958*Z +-0.000127168*Z*Z )*Energy + ( 1.04761 + -0.0403607*Z+0.000313587*Z*Z  )*Energy*Energy);
+  	 	console.log("Estimated b2 value =", res);
+        	setResult(`Estimated b2 value = ${res}`);
+  	 	}
+  	 	else if(transitionType ==="E1M2"){
+  	 	const res = 1 - ( 0.80964 + 0.00373756*Z+-2.09861e-06*Z*Z ) / ( 1 + ( -0.845433 + 0.0359096*Z+-0.000132749*Z*Z  )*Energy + ( 2.12379 + -0.0411186*Z+0.000172208*Z*Z  )*Energy*Energy );
+  	 	console.log("Estimated b2 value =", res);
+        	setResult(`Estimated b2 value = ${res}`);
+  	 	}
+  	 	else if(transitionType ==="E1M2"){}
+  	 	else if(transitionType ==="E2"){}
+  	 
+  	 	
+  	 }
+  
+  }
+  const handleCalculate = () => {
+    
+      const energyNum = parseFloat(formData.InputEnergy);
+      const atomicNum = parseFloat(formData.InputAtomic);
+      
+      if (!isNaN(energyNum)) {
+        CalcB2(atomicNum,energyNum);
+      } else {
+        setResult("Invalid energy input");
+      }
+     
+      
+  };
+
   return (
     <div className="App">
       <h1>Conversion Electron Particle Parameter Calculator</h1>
-      <h2>Comparison of theorectical calculations for b2</h2>
-      <Table dataSource={dataSource} columns={columns} />;
-      <div style={{ textAlign: 'left', marginBottom: 16 }}>
-      <Select
-    showSearch
-    placeholder="Select Source"
-    optionFilterProp="label"
-    onChange={onChange}
-    onSearch={onSearch}
-    options={[
-      {
-        value: 'Rose',
-        label: 'Rose',
-      },
-      {
-        value: 'Sliv',
-        label: 'Sliv',
-      },
-      {
-        value: 'Purdue',
-        label: 'Purdue',
-      },
-      {
-        value: 'Caltech',
-        label: 'Caltech',
-      },
+      <h2>Comparison of theoretical calculations for b2</h2>
 
-    ]}
-  />
-    <Select
-    showSearch
-    placeholder="Select Transition Type"
-    optionFilterProp="label"
-    onChange={onChange}
-    onSearch={onSearch}
-    options={[
-      {
-        value: 'E1',
-        label: 'E1',
-      },
-      {
-        value: 'E2',
-        label: 'E2',
-      },
-      {
-        value: 'M1',
-        label: 'M1',
-      },
-      {
-        value: 'M2',
-        label: 'M2',
-      },
-      {
-        value: 'E1M2',
-        label: 'E1M2',
-      },
-      {
-        value: 'M1E2',
-        label: 'M1E2',
-      },
+      <Table dataSource={dataSource} columns={columns} pagination={false} />
 
-    ]}
-  />
-      <Space.Compact>
-      <Input addonBefore="Atomic Number" placeholder="Enter Proton Number" allowClear />
-       </Space.Compact>
+      <div style={{ textAlign: "left", marginTop: 24 }}>
+        <Space direction="vertical" size="middle">
+          <Select
+            showSearch
+            placeholder="Select Source"
+            optionFilterProp="label"
+            onChange={(value) => {
+              console.log("Selected Source:", value);
+              setSelectedSource(value);
+            }}
+            options={[
+              { value: "Rose", label: "Rose" },
+              { value: "Sliv", label: "Sliv" },
+              { value: "Purdue", label: "Purdue" },
+              { value: "Caltech", label: "Caltech" },
+            ]}
+            style={{ width: 200 }}
+          />
 
-    <Space.Compact>
-      <Input addonBefore="Energy" placeholder="Enter Energy in keV" allowClear />
-    </Space.Compact>
-    </div>
+          <Select
+            showSearch
+            placeholder="Select Transition Type"
+            optionFilterProp="label"
+            onChange={(value) => {
+              console.log("Selected Transition Type:", value);
+              setTransitionType(value);
+            }}
+            options={[
+              { value: "E1", label: "E1" },
+              { value: "E2", label: "E2" },
+              { value: "M1", label: "M1" },
+              { value: "M2", label: "M2" },
+              { value: "E1M2", label: "E1M2" },
+              { value: "M1E2", label: "M1E2" },
+            ]}
+            style={{ width: 200 }}
+          />
+
+          <Input
+            name="InputAtomic"
+            addonBefore="Atomic Number"
+            placeholder="Enter Proton Number"
+            allowClear
+            value={formData.InputAtomic}
+            onChange={handleChange}
+            style={{ width: 300 }}
+          />
+
+          <Input
+            name="InputEnergy"
+            addonBefore="Energy"
+            placeholder="Enter Energy in keV"
+            allowClear
+            value={formData.InputEnergy}
+            onChange={handleChange}
+            style={{ width: 300 }}
+          />
+
+          <Button type="primary" onClick={handleCalculate}>
+            Calculate
+          </Button>
+          <p>{result}</p>
+        </Space>
+      </div>
     </div>
   );
 }
+

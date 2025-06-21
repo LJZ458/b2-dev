@@ -6,7 +6,7 @@
   "main": "src/index.tsx",
   "homepage": "https://LJZ458.github.io/b2-dev",
   "dependencies": {
-    "antd": "^5.26.0",
+    "antd": "^5.26.1",
     "react": "^19.0.0",
     "react-dom": "^19.0.0"
   },
@@ -27,8 +27,8 @@
     "eject": "react-scripts eject"
   },
   "overrides": {
-  "nth-check": "2.1.1"
-},
+    "nth-check": "2.1.1"
+  },
   "browserslist": [
     ">0.2%",
     "not dead",
