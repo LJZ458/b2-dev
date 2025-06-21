@@ -9,7 +9,13 @@
     "react-dom": "^19.0.0",
     "react-scripts": "^5.0.0",
     "antd": "5.26.0"
+    "homepage": "https://LJZ458.github.io/b2-dev"
+
   },
+  "scripts": {
+  "predeploy": "npm run build",
+  "deploy": "gh-pages -d build"
+},
   "devDependencies": {
     "@types/react": "19.0.0",
     "@types/react-dom": "19.0.0",
