@@ -1,2 +1,1 @@
-# b2-dev
-Created with CodeSandbox
+https://ljz458.github.io/b2-dev/
