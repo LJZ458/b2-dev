@@ -142,36 +142,7 @@ export default function App() {
   	 }
   
   }
-  const handleCalculateEnergySweep = () => {
-  const atomicNum = parseFloat(formData.InputAtomic);
-  if (isNaN(atomicNum)) {
-    setResult("Invalid atomic number input for energy sweep");
-    return;
-  }
-
-  const energieskeV = [];
-  const b2s = [];
-
-  for (let E = 10; E <= 1000; E += 10) {
-    const energyInMe = E / 511;
-    const b2 = CalcB2(atomicNum, energyInMe);
-    if (!isNaN(b2)) {
-      energieskeV.push(E);
-      b2s.push(b2);
-    }
-  }
-
-  
-  setEnergyPlotData([
-    {
-      x: energieskeV,
-      y: b2s,
-      type: "scatter",
-      mode: "lines+markers",
-      name: `b2(E) at Z = ${atomicNum}`,
-    },
-  ]);
-};
+ 
 
   const handleCalculate = () => {
   const energyNum = parseFloat(formData.InputEnergy) / 511;
@@ -200,7 +171,7 @@ export default function App() {
     }
   }
 
-  setResult(`Estimated b2 value = ${Userb2}---------- Plotting b2 vs Z for Energy = ${formData.InputEnergy} keV`);
+  setResult(`Estimated b2 value = ${Userb2} --- plotting b2 at constant energy and constant atomic number`);
   setPlotData([
     {
       x: Zs,
@@ -210,6 +181,37 @@ export default function App() {
       name: `b2(Z) at E = ${formData.InputEnergy} keV`,
     },
   ]);
+  const atomicNum = parseFloat(formData.InputAtomic);
+  if (isNaN(atomicNum)) {
+    setResult("Invalid atomic number input for energy sweep");
+    return;
+  }
+
+  const energieskeV = [];
+  const b2s = [];
+
+  for (let E = 10; E <= 1000; E += 10) {
+    const energyInMe = E / 511;
+    const b2 = CalcB2(atomicNum, energyInMe);
+    if (!isNaN(b2)) {
+      energieskeV.push(E);
+      b2s.push(b2);
+    }
+  }
+
+  
+  setEnergyPlotData([
+    {
+      x: energieskeV,
+      y: b2s,
+      type: "scatter",
+      mode: "lines+markers",
+      name: `b2(E) at Z = ${atomicNum}`,
+    },
+  ]);
+  
+  
+  
 };
 
 
@@ -281,9 +283,7 @@ export default function App() {
           <Button type="primary" onClick={handleCalculate}>
             Calculate
           </Button>
-          <Button type="primary" onClick={handleCalculateEnergySweep}>
-  	Plot b2 vs Energy (Z fixed)
-	</Button>
+          
           <p>{result}</p>
         </Space>
         <p></p>
