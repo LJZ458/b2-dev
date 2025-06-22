@@ -143,7 +143,7 @@ export default function App() {
   }
   const handleCalculate = () => {
     
-      const energyNum = parseFloat(formData.InputEnergy);
+      const energyNum = parseFloat(formData.InputEnergy)/511;
       const atomicNum = parseFloat(formData.InputAtomic);
       
       if (!isNaN(energyNum)) {
