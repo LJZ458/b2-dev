@@ -14,6 +14,7 @@ export default function App() {
   const [selectedSource, setSelectedSource] = useState("");
   const [transitionType, setTransitionType] = useState("");
   const [plotData, setPlotData] = useState([]);
+  const [energyPlotData, setEnergyPlotData] = useState([]);
   const handleChange = (e) => {
     const { name, value } = e.target;
     setFormData((prevData) => ({
@@ -116,26 +117,22 @@ export default function App() {
   	 else if(selectedSource === "Purdue" ){
   	 	if(transitionType === "E1"){
   	 	const res = 1 - ( 2.81012 + 0.0036971*Z ) / ( 1 + ( -0.409085 + 0.00918462*Z  )*Energy + ( 0.822086 + -0.00739632*Z  )*Energy*Energy );
-  	 	console.log("Estimated b2 value =", res);
-        	setResult(`Estimated b2 value = ${res}`);
+  	 	
         	return res;
   	 	}
   	 	else if(transitionType === "M1"){
   	 	const res = 1 - ( -0.531788 + 0.0499879*Z+-0.000356032*Z*Z ) / ( 1 + ( 2.28383 + 5.37883e-05*Z+-0.00027077*Z*Z  )*Energy + ( -0.714478 + 8.21319e-07*Z+0.000100324*Z*Z  )*Energy*Energy )
-  	 	console.log("Estimated b2 value =", res);
-        	setResult(`Estimated b2 value = ${res}`);
+  	 	
         	return res;
   	 	}
   	 	else if(transitionType ==="M2"){
   	 	const res = 1 + ( 0.0999781 + 0.0101438*Z+-7.04646e-05*Z*Z ) / ( 1 + ( 2.6442 + -0.0132958*Z +-0.000127168*Z*Z )*Energy + ( 1.04761 + -0.0403607*Z+0.000313587*Z*Z  )*Energy*Energy);
-  	 	console.log("Estimated b2 value =", res);
-        	setResult(`Estimated b2 value = ${res}`);
+  	 	
         	return res;
   	 	}
   	 	else if(transitionType ==="E1M2"){
   	 	const res = 1 - ( 0.80964 + 0.00373756*Z+-2.09861e-06*Z*Z ) / ( 1 + ( -0.845433 + 0.0359096*Z+-0.000132749*Z*Z  )*Energy + ( 2.12379 + -0.0411186*Z+0.000172208*Z*Z  )*Energy*Energy );
-  	 	console.log("Estimated b2 value =", res);
-        	setResult(`Estimated b2 value = ${res}`);
+  	 	
         	return res;
   	 	}
   	 	else if(transitionType ==="E1M2"){return 0;}
@@ -145,6 +142,37 @@ export default function App() {
   	 }
   
   }
+  const handleCalculateEnergySweep = () => {
+  const atomicNum = parseFloat(formData.InputAtomic);
+  if (isNaN(atomicNum)) {
+    setResult("Invalid atomic number input for energy sweep");
+    return;
+  }
+
+  const energieskeV = [];
+  const b2s = [];
+
+  for (let E = 10; E <= 1000; E += 10) {
+    const energyInMe = E / 511;
+    const b2 = CalcB2(atomicNum, energyInMe);
+    if (!isNaN(b2)) {
+      energieskeV.push(E);
+      b2s.push(b2);
+    }
+  }
+
+  
+  setEnergyPlotData([
+    {
+      x: energieskeV,
+      y: b2s,
+      type: "scatter",
+      mode: "lines+markers",
+      name: `b2(E) at Z = ${atomicNum}`,
+    },
+  ]);
+};
+
   const handleCalculate = () => {
   const energyNum = parseFloat(formData.InputEnergy) / 511;
   const fixedZ = parseFloat(formData.InputAtomic);
@@ -253,6 +281,9 @@ export default function App() {
           <Button type="primary" onClick={handleCalculate}>
             Calculate
           </Button>
+          <Button type="primary" onClick={handleCalculateEnergySweep}>
+  	Plot b2 vs Energy (Z fixed)
+	</Button>
           <p>{result}</p>
         </Space>
         <p></p>
@@ -286,7 +317,39 @@ export default function App() {
   }}
 />
 
+)}   {energyPlotData.length > 0 && (
+  <Plot
+    data={energyPlotData}
+    layout={{
+      width: 700,
+      height: 400,
+      title: "b2 vs Energy (keV) at fixed Proton Number (Z)",
+      xaxis: {
+      title: {
+        text: 'Energy(keV)',
+        font: {
+          family: 'Arial, sans-serif',
+          size: 16,
+          color: '#333'
+        }
+      }
+    },
+    yaxis: {
+      title: {
+        text: 'b2 Value',
+        font: {
+          family: 'Arial, sans-serif',
+          size: 16,
+          color: '#333'
+        }
+      }
+    }
+    }}
+  />
 )}
+
+
+  
       </div>
     </div>
   );
