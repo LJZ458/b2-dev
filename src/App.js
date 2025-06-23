@@ -113,6 +113,43 @@ export default function App() {
         	
   	 
   	 }
+  	 else if(selectedSource === "Sliv" ){
+  	 	if(transitionType === "E1"){
+  	 	const res = (0.712156 + -0.0679094*Z +  0.000396655*Z*Z) + (-4.30053 +0.131271*Z +-0.000748696*Z*Z)*Energy + (2.20455+ -0.0547943*Z + 0.000302655*Z*Z)*Energy*Energy;
+  	 	
+        	return res;
+  	 	}
+  	 	else if(transitionType === "M1"){
+  	 	const res = (0.361758 + -0.0137605*Z +  9.28387E-05*Z*Z) + (2.78739 +-0.0401454*Z +0.00013401*Z*Z)*Energy + (-0.67628+ 0.00913286*Z + -2.42634E-05*Z*Z)*Energy*Energy;
+  	 	
+        	return res;
+  	 	}
+  	 	else if(transitionType === "E2"){
+  	 	const res = (1.73965 +-0.0149913*Z + 8.55179e-05*Z*Z) + (-7.93213 + 0.21189*Z + -0.00125302*Z*Z) * Math.exp(-( 3.15486 + -0.112671*Z + 0.00117014*Z*Z )*Energy );
+  	 	
+        	return res;
+  	 	}
+  	 	
+  	 	else if(transitionType === "M2"){
+  	 	const res = (-1.12435+ 0.0542586*Z + -0.00029845*Z*Z) + (-1.33959 + 0.0290025*Z+ -0.000163086*Z*Z)*Math.log(Energy) + (1.4374 + -0.034124*Z +0.000199177*Z*Z)*Energy;
+  	 	
+        	return res;
+  	 	}
+  	 	
+  	 	else if(transitionType === "E1M2"){
+  	 	const res = (1.4513+ -0.0275*Z + 0.0002*Z*Z) + (1.0860 + -0.0237*Z+ 0.0002*Z*Z)*Math.log(Energy) + (-0.6456 + 0.0204*Z +-0.0001*Z*Z)*Energy;
+  	 	
+        	return res;
+  	 	}
+  	 	else if(transitionType === "M1E2"){
+  	 	const res = (11.0284+ -0.2485*Z + 0.0015*Z*Z) + (12.4428 +-0.2972*Z+ 0.0018*Z*Z)*Math.log(Energy) + (-9.1721 + 0.2239*Z +-0.0014*Z*Z)*Energy;
+  	 	
+        	return res;
+  	 	}
+  	 
+  	 
+  	 
+  	 }
   	 
   	 else if(selectedSource === "Purdue" ){
   	 	if(transitionType === "E1"){
