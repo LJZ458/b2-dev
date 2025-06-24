@@ -183,6 +183,44 @@ export default function App() {
   	 
   	 	
   	 }
+  	 
+  	 else if(selectedSource === "Caltech" ){
+  	 Energy = Energy*511;
+  	 if(transitionType === "E1"){
+  	 const res = 1 - ( 3.02651 + -0.00127532*Z + 4.18977E-05*Z*Z ) / ( 1 + ( -7.68221E-06 + 5.86701E-06*Z + 7.10362E-08*Z*Z )*Energy + ( 2.02679E-06 + -1.91626E-08*Z + -1.47214E-11*Z*Z )*Energy*Energy );
+  	 return res;
+  	 
+  	 }
+  	 else if(transitionType ==="E2"){
+  	 const res = 1 - ( -8.08649 + 0.383289*Z + -0.00659506*Z*Z+3.45538E-05*Z*Z*Z ) / ( 1 + ( 0.0214753 + -0.00104594*Z + 1.51502E-05*Z*Z +-4.91478E-08*Z*Z*Z)*Energy + (-7.12196E-06+ 4.88802E-07*Z + -8.82808E-09*Z*Z+5.56014E-11*Z*Z*Z )*Energy*Energy );
+  	 return res;
+  	 
+  	 }
+  	 else if(transitionType ==="M1"){
+  	 const res = (-0.53726 + -0.0240905*Z +0.000245825*Z*Z)+(0.381572 + -0.00116245*Z +-1.85136e-05*Z*Z)*Math.log(Energy)+(-0.000728339+ 1.81531e-05*Z +-1.08545e-07*Z*Z)*Energy;
+  	 return res;
+  	 
+  	 }
+  	 else if(transitionType ==="M2"){
+  	 const res = (1.51105 + 0.0083756*Z +-7.50033E-05*Z*Z)+(-0.115197 + 0.000112286*Z +6.63574E-06*Z*Z)*Math.log(Energy)+(0.000173621+ -4.2205E-06*Z +2.18643E-08*Z*Z)*Energy;
+  	 return res;
+  	 
+  	 
+  	 }
+  	 else if(transitionType ==="E1M2"){
+  	 const res = (0.125157 + 0.00119595*Energy +-6.76534E-07*Energy*Energy+1.03734E-10*Energy*Energy*Energy)+(-0.0414505 + 0.000138287*Energy +-1.09674E-07*Energy*Energy+4.59322E-11*Energy*Energy*Energy)*Math.log(Z)+(0.000388224+ -3.49532E-06*Energy +-2.45671E-10*Energy*Energy+2.71406E-13*Energy*Energy*Energy)*Z;
+  	 return res;	
+  	 
+  	 
+  	 }
+  	 else if(transitionType ==="M1E2"){
+  	 const res = (-0.232571 + -0.00245431*Z +2.44566E-05*Z*Z+-4.13881E-06*Z*Z*Z)+(0.0818815 + -0.000358571*Z +3.54821E-05*Z*Z+3.52075E-07*Z*Z*Z)*Math.log(Energy)+(0.000587701+ -4.52511E-06*Z +-9.1968E-08*Z*Z+2.46411E-10*Z*Z*Z)*Energy;
+  	 return res;
+  	 }
+  	 
+  	 
+  	 
+  	 }
   
   }
  
