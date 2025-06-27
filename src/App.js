@@ -4,6 +4,7 @@ import { Table, Button, Input, Select, Space } from "antd";
 import Plot from 'react-plotly.js';
 const { Search } = Input;
 import * as XLSX from 'sheetjs-style';
+import { DownloadOutlined } from "@ant-design/icons";
 export default function App() {
   const [formData, setFormData] = useState({
     InputAtomic: "",
@@ -512,6 +513,13 @@ fetchRawData(mainCalcData);
 
 
   
+      </div>
+      <div style={{ textAlign: "left", marginTop: 24 }}>
+      <a href={process.env.PUBLIC_URL + '/' + selectedSource.toString() + '.xlsx'} download>
+      <Button style={{ backgroundColor: '#fa8c16', borderColor: '#7cb305', color: 'white' }} type="primary" icon={<DownloadOutlined />}>
+        Download Raw Data
+      </Button>
+      </a>
       </div>
     </div>
 
