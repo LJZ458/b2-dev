@@ -263,7 +263,11 @@ const fetchRawData = async (mainCalcData) => {
       const b2 = row[transitionColIndex];
 
       if (!isNaN(k) && !isNaN(b2)) {
-        kVals.push(k * 511); // convert to keV
+        if(selectedSource=="Caltech"){
+        kVals.push(k); 
+        }
+        else{
+        kVals.push(k * 511)}; // convert to keV}
         b2Vals.push(b2);
       }
     }
