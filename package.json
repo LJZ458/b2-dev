@@ -7,10 +7,13 @@
   "homepage": "https://LJZ458.github.io/b2-dev",
   "dependencies": {
     "antd": "^5.26.1",
+    "exceljs": "^4.4.0",
+    "file-saver": "^2.0.5",
     "plotly.js": "^3.0.1",
     "react": "^19.0.0",
     "react-dom": "^19.0.0",
-    "react-plotly.js": "^2.6.0"
+    "react-plotly.js": "^2.6.0",
+    "sheetjs-style": "^0.15.8"
   },
   "devDependencies": {
     "@types/react": "19.0.0",

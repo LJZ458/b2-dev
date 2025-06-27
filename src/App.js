@@ -3,13 +3,14 @@ import React, { useState } from "react";
 import { Table, Button, Input, Select, Space } from "antd";
 import Plot from 'react-plotly.js';
 const { Search } = Input;
-
+import * as XLSX from 'sheetjs-style';
 export default function App() {
   const [formData, setFormData] = useState({
     InputAtomic: "",
     InputEnergy: "",
   });
   const [result, setResult] = useState('');
+  
 
   const [selectedSource, setSelectedSource] = useState("");
   const [transitionType, setTransitionType] = useState("");
@@ -30,14 +31,14 @@ export default function App() {
       zrange: "10-92",
       Erange: "0.3-5k",
       comments:
-        "consistent sign error in the interference particle parameter hence only pure b2 are adopted",
+        "Point nucleus estimation with consistent sign error in the interference particle parameter hence only pure b2 are adopted. Z=[10,20,30,40,54,64,72,78,83,88,92]",
     },
     {
       key: "2",
       source: "Sliv",
       zrange: "81-92",
       Erange: "0.2-2k",
-      comments: "limited atomic range",
+      comments: "Includes finite nuclei size and screening effect correction but limited atomic range. Z=[81,84,88,92]",
     },
     {
       key: "3",
@@ -45,7 +46,7 @@ export default function App() {
       zrange: "60-96",
       Erange: "0.1-1k",
       comments:
-        "limited energy range, calculation includes finite nuclei size and screening effect, data not well scanned",
+        "limited energy range, calculation includes finite nuclei size and screening effect, data not well scanned. Z=[60,64,68,72,76,80,84,88,92,96]",
     },
     {
       key: "4",
@@ -53,7 +54,7 @@ export default function App() {
       zrange: "31-103",
       Erange: "30-1500keV",
       comments:
-        "large list of data covering every proton number in the range, results are similar to Rose",
+        "large list of data covering every proton number in the range, results are similar to Rose.  ",
     },
   ];
 
@@ -137,12 +138,12 @@ export default function App() {
   	 	}
   	 	
   	 	else if(transitionType === "E1M2"){
-  	 	const res = (1.4513+ -0.0275*Z + 0.0002*Z*Z) + (1.0860 + -0.0237*Z+ 0.0002*Z*Z)*Math.log(Energy) + (-0.6456 + 0.0204*Z +-0.0001*Z*Z)*Energy;
+  	 	const res = (1.45126+ -0.027491*Z + 0.000185757*Z*Z) + (1.0860 + -0.0236917*Z+ 0.000159989*Z*Z)*Math.log(Energy) + (-0.64565 + 0.0203983*Z +-0.00014887*Z*Z)*Energy;
   	 	
         	return res;
   	 	}
   	 	else if(transitionType === "M1E2"){
-  	 	const res = (11.0284+ -0.2485*Z + 0.0015*Z*Z) + (12.4428 +-0.2972*Z+ 0.0018*Z*Z)*Math.log(Energy) + (-9.1721 + 0.2239*Z +-0.0014*Z*Z)*Energy;
+  	 	const res = (11.0284+ -0.248503*Z + 0.0014623*Z*Z) + (12.4428 +-0.297161*Z+0.00184527*Z*Z)*Math.log(Energy) + (-9.17208 + 0.223863*Z +-0.00138767*Z*Z)*Energy;
   	 	
         	return res;
   	 	}
@@ -224,6 +225,68 @@ export default function App() {
   
   }
  
+const fetchRawData = async (mainCalcData) => {
+  try {
+    const response = await fetch(process.env.PUBLIC_URL + '/' + selectedSource.toString() + '.xlsx');
+    const arrayBuffer = await response.arrayBuffer();
+    const data = new Uint8Array(arrayBuffer);
+    const workbook = XLSX.read(data, { type: 'array' });
+
+    const sheet = workbook.Sheets[formData.InputAtomic.toString()];
+    if (!sheet) {
+      setEnergyPlotData([mainCalcData]);
+      return;
+    }
+
+    const rows = XLSX.utils.sheet_to_json(sheet, { header: 1 });
+    if (rows.length < 2) {
+      setEnergyPlotData([mainCalcData]);
+      return;
+    }
+
+    // Find the column index for the selected transition type
+    const headerRow = rows[0];
+    const transitionColIndex = headerRow.indexOf(transitionType);
+
+    if (transitionColIndex === -1) {
+      console.warn(`Transition type "${transitionType}" not found in sheet headers`);
+      setEnergyPlotData([mainCalcData]);
+      return;
+    }
+
+    const kVals = [], b2Vals = [];
+
+    for (let i = 1; i < rows.length; i++) {
+      const row = rows[i];
+      const k = row[0];
+      const b2 = row[transitionColIndex];
+
+      if (!isNaN(k) && !isNaN(b2)) {
+        kVals.push(k * 511); // convert to keV
+        b2Vals.push(b2);
+      }
+    }
+
+    if (kVals.length && b2Vals.length) {
+      const expData = {
+        x: kVals,
+        y: b2Vals,
+        type: "scatter",
+        mode: "lines+markers",
+        name: `Theoretical. b2 (${transitionType}) at Z=${formData.InputAtomic}`,
+        marker: { color: "red", symbol: "circle" },
+      };
+      setEnergyPlotData([mainCalcData, expData]);
+    } else {
+      setEnergyPlotData([mainCalcData]);
+    }
+
+  } catch (err) {
+    console.error("Failed to load Excel file:", err);
+    setEnergyPlotData([mainCalcData]);
+  }
+};
+ 
 
   const handleCalculate = () => {
   const energyNum = parseFloat(formData.InputEnergy) / 511;
@@ -259,7 +322,7 @@ export default function App() {
       y: B2s,
       type: 'scatter',
       mode: 'lines+markers',
-      name: `b2(Z) at E = ${formData.InputEnergy} keV`,
+      name: `Fitted b2(Z) at E = ${formData.InputEnergy} keV`,
     },
   ]);
   const atomicNum = parseFloat(formData.InputAtomic);
@@ -280,20 +343,38 @@ export default function App() {
     }
   }
 
-  
-  setEnergyPlotData([
-    {
-      x: energieskeV,
-      y: b2s,
-      type: "scatter",
-      mode: "lines+markers",
-      name: `b2(E) at Z = ${atomicNum}`,
-    },
-  ]);
-  
-  
+ 
+  const mainCalcData = {
+  x: energieskeV,
+  y: b2s,
+  type: "scatter",
+  mode: "lines+markers",
+  name: `Fitted b2(E) at Z = ${atomicNum}`,
+  marker: { color: 'blue' },
+};
+setEnergyPlotData(mainCalcData);
+fetchRawData(mainCalcData);
   
 };
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 
   return (
@@ -433,6 +514,7 @@ export default function App() {
   
       </div>
     </div>
+
   );
 }
 
