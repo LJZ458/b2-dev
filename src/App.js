@@ -2,7 +2,6 @@ import "./styles.css";
 import React, { useState } from "react";
 import { Table, Button, Input, Select, Space } from "antd";
 import Plot from 'react-plotly.js';
-const { Search } = Input;
 import * as XLSX from 'sheetjs-style';
 import { DownloadOutlined } from "@ant-design/icons";
 export default function App() {
@@ -189,12 +188,15 @@ export default function App() {
   	 else if(selectedSource === "Caltech" ){
   	 Energy = Energy*511;
   	 if(transitionType === "E1"){
-  	 const res = 1 - ( 3.02651 + -0.00127532*Z + 4.18977E-05*Z*Z ) / ( 1 + ( -7.68221E-06 + 5.86701E-06*Z + 7.10362E-08*Z*Z )*Energy + ( 2.02679E-06 + -1.91626E-08*Z + -1.47214E-11*Z*Z )*Energy*Energy );
+  	 const res = 1 - ( 2.83025 + 0.00501971*Z + -3.21012E-06*Z*Z ) / ( 1 + ( -0.000663078 + 2.68535E-05*Z + -7.81678E-08*Z*Z )*Energy + ( 2.89913E-06 + -4.72336E-08*Z + 1.83694E-10*Z*Z )*Energy*Energy );
   	 return res;
   	 
   	 }
   	 else if(transitionType ==="E2"){
-  	 const res = 1 - ( -8.08649 + 0.383289*Z + -0.00659506*Z*Z+3.45538E-05*Z*Z*Z ) / ( 1 + ( 0.0214753 + -0.00104594*Z + 1.51502E-05*Z*Z +-4.91478E-08*Z*Z*Z)*Energy + (-7.12196E-06+ 4.88802E-07*Z + -8.82808E-09*Z*Z+5.56014E-11*Z*Z*Z )*Energy*Energy );
+  	 const base =Energy/ (719.309 + -2.23227*Z + -0.0423089*Z*Z);
+  	 const expo = 2.92681 + -0.0227835*Z + 7.99467E-05*Z*Z;
+  	 
+  	 const res = (1.34372 + -0.0077455*Z + 4.70634E-05*Z*Z) + ((1.98531 - (1.34372 + -0.0077455*Z + 4.70634E-05*Z*Z)) / (1 + Math.pow(base, expo)));
   	 return res;
   	 
   	 }
@@ -273,7 +275,7 @@ const fetchRawData = async (mainCalcData) => {
     }
 
     if (kVals.length && b2Vals.length) {
-      const expData = {
+      const rawData = {
         x: kVals,
         y: b2Vals,
         type: "scatter",
@@ -281,7 +283,7 @@ const fetchRawData = async (mainCalcData) => {
         name: `Theoretical. b2 (${transitionType}) at Z=${formData.InputAtomic}`,
         marker: { color: "red", symbol: "circle" },
       };
-      setEnergyPlotData([mainCalcData, expData]);
+      setEnergyPlotData([mainCalcData, rawData]);
     } else {
       setEnergyPlotData([mainCalcData]);
     }
@@ -339,7 +341,7 @@ const fetchRawData = async (mainCalcData) => {
   const energieskeV = [];
   const b2s = [];
 
-  for (let E = 10; E <= 1000; E += 10) {
+  for (let E = 10; E <= 2000; E += 10) {
     const energyInMe = E / 511;
     const b2 = CalcB2(atomicNum, energyInMe);
     if (!isNaN(b2)) {
