@@ -201,7 +201,10 @@ export default function App() {
   	 
   	 }
   	 else if(transitionType ==="M1"){
-  	 const res = (-0.53726 + -0.0240905*Z +0.000245825*Z*Z)+(0.381572 + -0.00116245*Z +-1.85136e-05*Z*Z)*Math.log(Energy)+(-0.000728339+ 1.81531e-05*Z +-1.08545e-07*Z*Z)*Energy;
+  	 const base1 = Math.log(1 + Energy/([12]+[13]*Z));
+
+  	 
+  	 const res = (0.144236+-0.0156544*Z+0.000148269*Z*Z) + (1.41253+-0.00340098*Z+-0.000146766*Z*Z)*Math.log(1 + Energy/(24.7433+2.17371*Z)) +  (-0.576992+0.00154396*Z+8.50697E-05*Z*Z)*Math.pow(base1, 2) +(0.0460954+0.00137315*Z+-2.92565E-05*Z*Z)*Math.pow(base1, 3);
   	 return res;
   	 
   	 }
